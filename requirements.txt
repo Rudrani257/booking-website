@@ -1,0 +1,7 @@
+Flask
+pymongo
+bcrypt
+python-dotenv
+qrcode
+Pillow
+reportlab

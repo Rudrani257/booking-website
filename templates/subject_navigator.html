@@ -1,0 +1,435 @@
+{% extends "base.html" %}
+
+{% block title %}Subject Navigator - BFS & DFS{% endblock %}
+
+{% block content %}
+<style>
+/* ===== PAGE BACKGROUND ===== */
+body {
+    background: linear-gradient(180deg, #cfeeff 0%, #b6e6ff 100%);
+    color: #0f172a;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 25px;
+}
+
+/* ===== HEADER ===== */
+.header {
+    background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+    padding: 28px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(14,165,233,0.25);
+    color: #ffffff;
+}
+
+/* ===== SUBJECT TABS ===== */
+.subject-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.tab-btn {
+    background: #ffffff;
+    color: #0f172a;
+    border: 2px solid #bae6fd;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.tab-btn.active,
+.tab-btn:hover {
+    background: #0ea5e9;
+    color: #ffffff;
+    border-color: #0ea5e9;
+}
+
+/* ===== CONTROLS ===== */
+.controls {
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 16px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border: 1px solid #bae6fd;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-bfs {
+    background: #0ea5e9;
+    color: white;
+}
+
+.btn-dfs {
+    background: #06b6d4;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+/* ===== TREE CONTAINER ===== */
+.tree-container {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 18px;
+    margin-top: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border: 1px solid #bae6fd;
+}
+
+/* ===== TREE ===== */
+.tree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 1000px;
+}
+
+.tree-level {
+    display: flex;
+    gap: 35px;
+    margin-bottom: 55px;
+}
+
+/* ===== TREE NODE ===== */
+.tree-node {
+    width: 120px;
+    padding: 14px;
+    background: #f8fbff;
+    border: 2px solid #0ea5e9;
+    border-radius: 14px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+    color: #0f172a;
+    transition: 0.3s;
+}
+
+/* VISITED NODE */
+.tree-node.visited {
+    background: #0ea5e9;
+    color: white;
+    box-shadow: 0 0 18px rgba(14,165,233,0.6);
+}
+
+/* CURRENT NODE */
+.tree-node.current {
+    background: #06b6d4;
+    color: white;
+    transform: scale(1.12);
+    box-shadow: 0 0 22px rgba(6,182,212,0.8);
+}
+
+/* ===== CONNECTOR LINE ===== */
+.tree-line {
+    position: absolute;
+    height: 45px;
+    width: 2px;
+    background: #0ea5e9;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* ===== INFO PANEL ===== */
+.info-panel {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 18px;
+    margin-top: 25px;
+    border: 1px solid #bae6fd;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.info-panel h3,
+.info-panel h4 {
+    color: #0f172a;
+}
+
+.info-panel p {
+    color: #475569;
+}
+
+/* ===== TRAVERSAL ORDER ===== */
+.order-item {
+    background: #e0f2fe;
+    color: #0f172a;
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid #0ea5e9;
+    font-weight: 600;
+}
+
+.order-item.active {
+    background: #0ea5e9;
+    color: white;
+}
+</style>
+
+
+
+<div class="container">
+    <div class="header">
+        <h1>🌳 Multi-Subject Learning Navigator - BFS & DFS</h1>
+        <p style="margin: 5px 0 15px 0; opacity: 0.9;">Explore learning paths for DSA, Python, Java, and Web Development!</p>
+        <a href="{{ url_for('dashboard') }}" style="color: white; text-decoration: none; font-weight: 600;">← Back to Dashboard</a>
+    </div>
+    
+    <!-- Subject Tabs -->
+    <div class="subject-tabs">
+        <button class="tab-btn active" onclick="switchSubject('dsa')">🧠 DSA</button>
+        <button class="tab-btn" onclick="switchSubject('python')">🐍 Python</button>
+        <button class="tab-btn" onclick="switchSubject('java')">☕ Java</button>
+        <button class="tab-btn" onclick="switchSubject('web')">🌐 Web Dev</button>
+        <button class="tab-btn" onclick="switchSubject('dbms')">🗄 DBMS</button>
+        <button class="tab-btn" onclick="switchSubject('os')">💻 OS</button>
+        <button class="tab-btn" onclick="switchSubject('cn')">🌐 CN</button>
+        <button class="tab-btn" onclick="switchSubject('ai')">🤖 AI</button>
+
+    </div>
+    
+    <div class="controls">
+        <button class="btn btn-bfs" onclick="runBFS()">▶ Run BFS (Level-by-Level)</button>
+        <button class="btn btn-dfs" onclick="runDFS()">▶ Run DFS (Deep Dive)</button>
+        <button class="btn btn-dfs" style="background: #1a1a1a;" onclick="reset()">🔄 Reset</button>
+        <div style="margin-left: auto; color: white; font-weight: 600;" id="status">
+            Ready to start!
+        </div>
+    </div>
+    
+    <div class="tree-container">
+        <h3 style="color: white; margin: 0 0 20px 0;" id="treeTitle">DSA Learning Tree</h3>
+        <div class="tree" id="tree"></div>
+    </div>
+    
+    <div class="info-panel">
+        <h3 id="algoTitle">Choose BFS or DFS</h3>
+        <p id="algoDesc" style="margin: 10px 0 15px 0;">
+            BFS explores level-by-level (breadth-first), while DFS goes deep into one path before backtracking.
+        </p>
+        <h4 style="color: white; margin: 15px 0 10px 0;">Traversal Order:</h4>
+        <div class="traversal-order" id="traversalOrder"></div>
+    </div>
+</div>
+
+<script>
+const subjects = {
+    dsa: {
+        title: 'DSA Learning Tree',
+        nodes: [
+            'DSA Basics', 'Arrays', 'Linked Lists', 'Stacks', 'Queues', 
+            'Trees', 'Hashing', 'Binary Trees', 'BST', 'Heaps', 'Graphs'
+        ],
+        bfsOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        dfsOrder: [0, 1, 3, 4, 2, 5, 7, 8, 9, 10, 6]
+    },
+    python: {
+        title: 'Python Learning Path',
+        nodes: [
+            'Python Basics', 'Variables & Types', 'Functions', 'OOP', 'Modules',
+            'File Handling', 'Error Handling', 'List Comprehension', 'Decorators', 'Generators', 'Async/Await'
+        ],
+        bfsOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        dfsOrder: [0, 1, 7, 8, 2, 3, 9, 10, 4, 5, 6]
+    },
+    java: {
+        title: 'Java Learning Path',
+        nodes: [
+            'Java Basics', 'Data Types', 'OOP', 'Inheritance', 'Polymorphism',
+            'Collections', 'Exception Handling', 'Generics', 'Streams', 'Spring Boot', 'Microservices'
+        ],
+        bfsOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        dfsOrder: [0, 1, 3, 4, 2, 5, 7, 8, 9, 10, 6]
+    },
+    web: {
+        title: 'Web Development Path',
+        nodes: [
+            'HTML/CSS Basics', 'HTML Tags', 'CSS Styling', 'JavaScript', 'DOM Manipulation',
+            'React', 'Components', 'State Management', 'Node.js', 'Express', 'MongoDB'
+        ],
+        bfsOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        dfsOrder: [0, 1, 6, 7, 2, 3, 8, 4, 5, 9, 10]
+    },
+    dbms: {
+        title: 'DBMS Learning Path',
+        nodes: [
+            'DBMS Basics', 'ER Diagrams', 'Relational Model', 'SQL', 'Normalization',
+            'Transactions', 'Locking', 'Indexing', 'Query Optimization', 'ACID Properties', 'Database Design'
+        ],
+        bfsOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        dfsOrder: [0, 1, 3, 4, 2, 5, 7, 8, 9, 10, 6]
+    },
+    os: {
+        title: 'Operating Systems Path',
+        nodes: [
+            'OS Basics', 'Processes & Threads', 'Memory Management', 'Scheduling', 'Deadlocks',
+            'File Systems', 'I/O Management', 'Security & Protection', 'Virtual Memory', 'Process Communication'
+        ],
+        bfsOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        dfsOrder: [0, 1, 3, 4, 2 ,5 ,7 ,8 ,9 ,6]
+    },
+    cn: {
+        title: 'Computer Networks Path',
+        nodes: [
+            'Network Fundamentals', 'OSI Model', 'TCP/IP Stack', 'Routing Protocols', 
+            'Network Security & Cryptography'
+        ],
+        bfsOrder: [0 ,1 ,2 ,3 ,4],
+        dfsOrder: [0 ,1 ,2 ,3 ,4]
+    },
+    ai: {
+        title: "AI Learning Path",
+        nodes: [
+            "AI Fundamentals", "Machine Learning", "Deep Learning", "Neural Networks", "Natural Language Processing"
+        ],
+        bfsOrder: [0 ,1 ,2 ,3 ,4],
+        dfsOrder: [0 ,1 ,2 ,3 ,4]
+    }
+};
+
+let currentSubject = 'dsa';
+let currentTraversal = [];
+
+function switchSubject(subject) {
+    currentSubject = subject;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('treeTitle').textContent = subjects[subject].title;
+    reset();
+    renderTree();
+}
+
+function renderTree() {
+    const tree = document.getElementById('tree');
+    const nodes = subjects[currentSubject].nodes;
+    
+    let html = '';
+    let levelStart = 0;
+    let level = 0;
+    
+    while (levelStart < nodes.length) {
+        const levelSize = Math.pow(2, level);
+        const levelEnd = Math.min(levelStart + levelSize, nodes.length);
+        
+        html += '<div class="tree-level">';
+        for (let i = levelStart; i < levelEnd; i++) {
+            html += `
+                <div class="tree-node" id="node-${i}">
+                    <div class="node-label">${nodes[i]}</div>
+                    ${i < Math.floor((nodes.length - 1) / 2) ? '<div class="tree-line"></div>' : ''}
+                </div>
+            `;
+        }
+        html += '</div>';
+        
+        levelStart = levelEnd;
+        level++;
+        
+        if (level >= 4) break;
+    }
+    
+    tree.innerHTML = html;
+}
+
+function reset() {
+    document.querySelectorAll('.tree-node').forEach(node => {
+        node.classList.remove('visited', 'current');
+    });
+    document.getElementById('traversalOrder').innerHTML = '';
+    document.getElementById('status').textContent = 'Ready to start!';
+    document.getElementById('algoTitle').textContent = 'Choose BFS or DFS';
+    currentTraversal = [];
+}
+
+async function runBFS() {
+    reset();
+    document.getElementById('algoTitle').textContent = '🔵 Breadth-First Search (BFS)';
+    document.getElementById('algoDesc').textContent = 'BFS explores all topics at the current level before moving deeper. Perfect for learning systematically!';
+    document.getElementById('status').textContent = 'Running BFS...';
+    
+    const order = subjects[currentSubject].bfsOrder;
+    
+    for (let i = 0; i < order.length; i++) {
+        const nodeId = `node-${order[i]}`;
+        const node = document.getElementById(nodeId);
+        
+        if (node) {
+            node.classList.add('current');
+            addToTraversal(subjects[currentSubject].nodes[order[i]]);
+            
+            await sleep(800);
+            
+            node.classList.remove('current');
+            node.classList.add('visited');
+        }
+    }
+    
+    document.getElementById('status').textContent = 'BFS Complete! ✅';
+}
+
+async function runDFS() {
+    reset();
+    document.getElementById('algoTitle').textContent = '🟢 Depth-First Search (DFS)';
+    document.getElementById('algoDesc').textContent = 'DFS goes deep into one path before exploring others. Great for mastering one topic completely!';
+    document.getElementById('status').textContent = 'Running DFS...';
+    
+    const order = subjects[currentSubject].dfsOrder;
+    
+    for (let i = 0; i < order.length; i++) {
+        const nodeId = `node-${order[i]}`;
+        const node = document.getElementById(nodeId);
+        
+        if (node) {
+            node.classList.add('current');
+            addToTraversal(subjects[currentSubject].nodes[order[i]]);
+            
+            await sleep(800);
+            
+            node.classList.remove('current');
+            node.classList.add('visited');
+        }
+    }
+    
+    document.getElementById('status').textContent = 'DFS Complete! ✅';
+}
+
+function addToTraversal(nodeName) {
+    currentTraversal.push(nodeName);
+    const container = document.getElementById('traversalOrder');
+    const item = document.createElement('div');
+    item.className = 'order-item active';
+    item.textContent = `${currentTraversal.length}. ${nodeName}`;
+    container.appendChild(item);
+    
+    setTimeout(() => item.classList.remove('active'), 500);
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Initialize
+renderTree();
+</script>
+{% endblock %}

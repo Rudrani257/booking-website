@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+
+{% block title %}Career Path Finder{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 50%, #7DD3FC 100%);
+    }
+    
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .header {
+        background: linear-gradient(135deg, #0EA5E9 0%, #06B6D4 100%);
+        padding: 30px;
+        border-radius: 24px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 40px rgba(14, 165, 233, 0.3);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .main-content {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 25px;
+    }
+    
+    .selector-card {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 25px;
+        border-radius: 24px;
+        box-shadow: 0 8px 30px rgba(14, 165, 233, 0.15);
+        height: fit-content;
+        border: 2px solid rgba(14, 165, 233, 0.1);
+    }
+    
+    .selector-card h3 {
+        color: #0f172a;
+        margin: 0 0 20px 0;
+    }
+    
+    .career-option {
+        padding: 15px;
+        background: white;
+        border: 2px solid #E0F2FE;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 600;
+        color: #475569;
+    }
+    
+    .career-option:hover {
+        background: #F0F9FF;
+        border-color: #0EA5E9;
+        color: #0EA5E9;
+        transform: translateX(5px);
+    }
+    
+    .career-option.active {
+        background: linear-gradient(135deg, #0EA5E9, #06B6D4);
+        color: white;
+        border-color: #0EA5E9;
+        box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+    }
+    
+    .visualization-area {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 30px;
+        border-radius: 24px;
+        box-shadow: 0 8px 30px rgba(14, 165, 233, 0.15);
+        min-height: 600px;
+        border: 2px solid rgba(14, 165, 233, 0.1);
+    }
+    
+    .visualization-area h3 {
+        color: #0f172a;
+    }
+    
+    .flow-diagram {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 30px;
+        overflow-x: auto;
+        margin: 20px 0;
+    }
+    
+    .flow-step {
+        min-width: 180px;
+        padding: 20px;
+        background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+        border: 3px solid #dc0000;
+        border-radius: 15px;
+        text-align: center;
+        position: relative;
+        transition: all 0.3s;
+        animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    .flow-step:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 30px rgba(220, 0, 0, 0.8);
+    }
+    
+    .flow-step.start {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border-color: #10b981;
+    }
+    
+    .flow-step.end {
+        background: linear-gradient(135deg, #dc0000, #8b0000);
+        border-color: #ff0000;
+        box-shadow: 0 0 30px rgba(220, 0, 0, 0.6);
+    }
+    
+    .step-title {
+        font-weight: 700;
+        font-size: 16px;
+        color: white;
+        margin-bottom: 8px;
+    }
+    
+    .step-duration {
+        font-size: 12px;
+        color: #e5e5e5;
+        background: rgba(220, 0, 0, 0.3);
+        padding: 4px 10px;
+        border-radius: 12px;
+        display: inline-block;
+        margin-top: 5px;
+    }
+    
+    .flow-arrow {
+        font-size: 30px;
+        color: #dc0000;
+        font-weight: bold;
+    }
+    
+    .path-info {
+        background: rgba(220, 0, 0, 0.1);
+        padding: 25px;
+        border-radius: 15px;
+        margin-top: 20px;
+        border: 2px solid #dc0000;
+    }
+    
+    .path-info h4 {
+        color: white;
+        margin: 0 0 15px 0;
+    }
+    
+    .path-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .step {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: #1a1a1a;
+        border-radius: 12px;
+        border: 2px solid #dc0000;
+    }
+    
+    .step-number {
+        background: linear-gradient(135deg, #dc0000, #8b0000);
+        color: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    
+    .step-content {
+        flex: 1;
+    }
+    
+    .step-name {
+        font-weight: 600;
+        color: white;
+        margin-bottom: 5px;
+    }
+    
+    .step-meta {
+        font-size: 13px;
+        color: #e5e5e5;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .difficulty-badge {
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .diff-easy { background: #10b981; color: white; }
+    .diff-medium { background: #f59e0b; color: white; }
+    .diff-hard { background: #dc0000; color: white; }
+</style>
+
+<div class="container">
+    <div class="header">
+        <h1>🎯 Career Path Finder - Dijkstra's Algorithm</h1>
+        <p style="margin: 5px 0 15px 0; opacity: 0.9;">Find the shortest learning path to your dream career!</p>
+        <a href="{{ url_for('dashboard') }}" style="color: white; text-decoration: none; font-weight: 600;">← Back to Dashboard</a>
+    </div>
+    
+    <div class="main-content">
+        <div class="selector-card">
+            <h3>Select Your Goal</h3>
+            <div class="career-option active" onclick="showPath('python-dev')">
+                🐍 Python Developer
+            </div>
+            <div class="career-option" onclick="showPath('java-dev')">
+                ☕ Java Developer
+            </div>
+            <div class="career-option" onclick="showPath('dsa-expert')">
+                🧠 DSA Expert
+            </div>
+            <div class="career-option" onclick="showPath('web-dev')">
+                🌐 Full Stack Web Dev
+            </div>
+            <div class="career-option" onclick="showPath('ml-engineer')">
+                🤖 ML Engineer
+            </div>
+            <div class="career-option" onclick="showPath('devops')">
+                ⚙️ DevOps Engineer
+            </div>
+            <div class="career-option" onclick="showPath('mobile-dev')">
+                📱 Mobile Developer
+            </div>
+            <div class="career-option" onclick="showPath('data-scientist')">
+                📊 Data Scientist
+            </div>
+        </div>
+        
+        <div class="visualization-area">
+            <h3>Learning Path Flow Diagram</h3>
+            <div class="flow-diagram" id="flowDiagram"></div>
+            
+            <div class="path-info">
+                <h4>📍 Detailed Learning Steps:</h4>
+                <p style="color: #e5e5e5; margin: 0 0 15px 0;" id="pathDescription"></p>
+                <div class="path-steps" id="pathSteps"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const careerPaths = {
+    'python-dev': {
+        title: 'Python Developer',
+        path: ['Start', 'Python Basics', 'OOP', 'Django/Flask', 'Database', 'Goal Achieved!'],
+        durations: ['0', '2 months', '1 month', '2 months', '1 month', '0'],
+        steps: [
+            {name: 'Python Basics', difficulty: 'Easy', duration: '2 months', topics: 'Variables, Data Types, Functions, Loops'},
+            {name: 'OOP Concepts', difficulty: 'Medium', duration: '1 month', topics: 'Classes, Inheritance, Polymorphism'},
+            {name: 'Django/Flask', difficulty: 'Medium', duration: '2 months', topics: 'Web Framework, REST APIs'},
+            {name: 'Database (SQL)', difficulty: 'Medium', duration: '1 month', topics: 'PostgreSQL, ORM'},
+            {name: 'Projects & Portfolio', difficulty: 'Hard', duration: '2 months', topics: 'Build 3-5 Real Projects'}
+        ]
+    },
+    'java-dev': {
+        title: 'Java Developer',
+        path: ['Start', 'Java Basics', 'OOP', 'Spring Boot', 'Microservices', 'Goal Achieved!'],
+        durations: ['0', '2 months', '1.5 months', '2 months', '2 months', '0'],
+        steps: [
+            {name: 'Java Basics', difficulty: 'Easy', duration: '2 months', topics: 'Syntax, Data Types, Collections'},
+            {name: 'OOP Principles', difficulty: 'Medium', duration: '1.5 months', topics: 'Encapsulation, Abstraction'},
+            {name: 'Spring Boot', difficulty: 'Hard', duration: '2 months', topics: 'REST APIs, JPA, Security'},
+            {name: 'Microservices', difficulty: 'Hard', duration: '2 months', topics: 'Docker, Kubernetes, Kafka'},
+            {name: 'System Design', difficulty: 'Hard', duration: '2 months', topics: 'Scalability, Load Balancing'}
+        ]
+    },
+    'dsa-expert': {
+        title: 'DSA Expert',
+        path: ['Start', 'Programming', 'Arrays & Strings', 'Trees & Graphs', 'Algorithms', 'Goal Achieved!'],
+        durations: ['0', '1 month', '2 months', '3 months', '2 months', '0'],
+        steps: [
+            {name: 'Programming Basics', difficulty: 'Easy', duration: '1 month', topics: 'Any language (C++/Java/Python)'},
+            {name: 'Arrays & Strings', difficulty: 'Medium', duration: '2 months', topics: '100+ Problems'},
+            {name: 'Trees & Graphs', difficulty: 'Hard', duration: '3 months', topics: 'BFS, DFS, DP on Trees'},
+            {name: 'DP & Greedy', difficulty: 'Hard', duration: '2 months', topics: 'Advanced Problem Solving'},
+            {name: 'Competitive Programming', difficulty: 'Hard', duration: '3 months', topics: 'Codeforces, Leetcode'}
+        ]
+    },
+    'web-dev': {
+        title: 'Full Stack Web Developer',
+        path: ['Start', 'HTML/CSS', 'JavaScript', 'React', 'Node.js', 'Goal Achieved!'],
+        durations: ['0', '1 month', '2 months', '2 months', '2 months', '0'],
+        steps: [
+            {name: 'HTML/CSS', difficulty: 'Easy', duration: '1 month', topics: 'Responsive Design, Flexbox, Grid'},
+            {name: 'JavaScript', difficulty: 'Medium', duration: '2 months', topics: 'ES6+, Async/Await, Fetch'},
+            {name: 'React/Vue', difficulty: 'Medium', duration: '2 months', topics: 'Components, Hooks, State'},
+            {name: 'Node.js/Express', difficulty: 'Medium', duration: '2 months', topics: 'REST APIs, Authentication'},
+            {name: 'Full Stack Projects', difficulty: 'Hard', duration: '2 months', topics: 'Deploy 3 Real Apps'}
+        ]
+    },
+    'ml-engineer': {
+        title: 'ML Engineer',
+        path: ['Start', 'Python', 'Math/Stats', 'ML Algorithms', 'Deep Learning', 'Goal Achieved!'],
+        durations: ['0', '1 month', '3 months', '3 months', '3 months', '0'],
+        steps: [
+            {name: 'Python + NumPy', difficulty: 'Easy', duration: '1 month', topics: 'Pandas, Matplotlib'},
+            {name: 'Math & Statistics', difficulty: 'Hard', duration: '3 months', topics: 'Linear Algebra, Calculus'},
+            {name: 'ML Algorithms', difficulty: 'Hard', duration: '3 months', topics: 'Regression, Classification, Clustering'},
+            {name: 'Deep Learning', difficulty: 'Hard', duration: '3 months', topics: 'Neural Networks, CNN, RNN'},
+            {name: 'Projects & Kaggle', difficulty: 'Hard', duration: '2 months', topics: 'Real ML Projects'}
+        ]
+    },
+    'devops': {
+        title: 'DevOps Engineer',
+        path: ['Start', 'Linux', 'Git/GitHub', 'Docker', 'Kubernetes', 'Goal Achieved!'],
+        durations: ['0', '1 month', '1 month', '2 months', '2 months', '0'],
+        steps: [
+            {name: 'Linux Basics', difficulty: 'Easy', duration: '1 month', topics: 'Commands, Shell Scripting'},
+            {name: 'Git/GitHub', difficulty: 'Easy', duration: '1 month', topics: 'Version Control, CI/CD'},
+            {name: 'Docker', difficulty: 'Medium', duration: '2 months', topics: 'Containerization, Images'},
+            {name: 'Kubernetes', difficulty: 'Hard', duration: '2 months', topics: 'Orchestration, Deployment'},
+            {name: 'Cloud (AWS/Azure)', difficulty: 'Hard', duration: '3 months', topics: 'EC2, S3, Lambda'}
+        ]
+    },
+    'mobile-dev': {
+        title: 'Mobile Developer',
+        path: ['Start', 'Programming', 'React Native', 'State Mgmt', 'APIs', 'Goal Achieved!'],
+        durations: ['0', '1 month', '2 months', '1 month', '2 months', '0'],
+        steps: [
+            {name: 'JavaScript Basics', difficulty: 'Easy', duration: '1 month', topics: 'ES6, Async'},
+            {name: 'React Native', difficulty: 'Medium', duration: '2 months', topics: 'Components, Navigation'},
+            {name: 'State Management', difficulty: 'Medium', duration: '1 month', topics: 'Redux, Context API'},
+            {name: 'REST APIs', difficulty: 'Medium', duration: '2 months', topics: 'Fetch, Axios'},
+            {name: 'Publish Apps', difficulty: 'Hard', duration: '1 month', topics: 'Play Store, App Store'}
+        ]
+    },
+    'data-scientist': {
+        title: 'Data Scientist',
+        path: ['Start', 'Python', 'Statistics', 'ML', 'Data Viz', 'Goal Achieved!'],
+        durations: ['0', '1 month', '2 months', '3 months', '2 months', '0'],
+        steps: [
+            {name: 'Python + Pandas', difficulty: 'Easy', duration: '1 month', topics: 'Data Manipulation'},
+            {name: 'Statistics', difficulty: 'Medium', duration: '2 months', topics: 'Hypothesis Testing'},
+            {name: 'ML Algorithms', difficulty: 'Hard', duration: '3 months', topics: 'Scikit-learn'},
+            {name: 'Data Visualization', difficulty: 'Medium', duration: '2 months', topics: 'Matplotlib, Seaborn'},
+            {name: 'Big Data Tools', difficulty: 'Hard', duration: '2 months', topics: 'Spark, Hadoop'}
+        ]
+    }
+};
+
+function showPath(careerKey) {
+    document.querySelectorAll('.career-option').forEach(opt => opt.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    const career = careerPaths[careerKey];
+    
+    // Update description
+    document.getElementById('pathDescription').innerHTML = `
+        To become a <strong style="color: #dc0000;">${career.title}</strong>, follow this optimal learning path using Dijkstra's shortest path algorithm:
+    `;
+    
+    // Build flow diagram
+    const flowHtml = career.path.map((step, idx) => {
+        const isStart = idx === 0;
+        const isEnd = idx === career.path.length - 1;
+        const stepClass = isStart ? 'start' : isEnd ? 'end' : '';
+        
+        return `
+            ${idx > 0 ? '<div class="flow-arrow">→</div>' : ''}
+            <div class="flow-step ${stepClass}">
+                <div class="step-title">${step}</div>
+                ${career.durations[idx] !== '0' ? `<div class="step-duration">${career.durations[idx]}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+    
+    document.getElementById('flowDiagram').innerHTML = flowHtml;
+    
+    // Update detailed steps
+    const stepsHtml = career.steps.map((step, idx) => `
+        <div class="step">
+            <div class="step-number">${idx + 1}</div>
+            <div class="step-content">
+                <div class="step-name">${step.name}</div>
+                <div class="step-meta">
+                    <span>⏱️ ${step.duration}</span>
+                    <span class="difficulty-badge diff-${step.difficulty.toLowerCase()}">${step.difficulty}</span>
+                    <span>📚 ${step.topics}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    document.getElementById('pathSteps').innerHTML = stepsHtml;
+}
+
+// Initialize with Python Developer
+window.onload = () => {
+    showPath('python-dev');
+};
+</script>
+{% endblock %}

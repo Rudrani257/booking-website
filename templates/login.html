@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Lecture Booking{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <h1>Welcome Back!</h1>
+        <p class="subtitle">Login to book your next lecture</p>
+        
+        <form method="POST" action="{{ url_for('login') }}" class="auth-form">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="your@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
+            
+            <button type="submit" class="btn-primary">Login</button>
+        </form>
+        
+        <p class="auth-footer">
+            Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

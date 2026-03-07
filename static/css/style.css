@@ -1,0 +1,200 @@
+/* ==================== PEACEFUL BLUE & TEAL THEME ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 50%, #7DD3FC 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ==================== FLASH MESSAGES ==================== */
+.flash-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 400px;
+}
+
+.flash {
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideIn 0.3s ease-out;
+    backdrop-filter: blur(10px);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.flash-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.flash-error {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.close-flash {
+    cursor: pointer;
+    font-size: 20px;
+    margin-left: 15px;
+    font-weight: bold;
+}
+
+/* ==================== AUTH PAGES - PEACEFUL THEME ==================== */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.auth-box {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(14, 165, 233, 0.2);
+    width: 100%;
+    max-width: 450px;
+    border: 2px solid rgba(56, 189, 248, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.auth-box h1 {
+    background: linear-gradient(135deg, #0EA5E9, #06B6D4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 32px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.subtitle {
+    color: #475569;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 16px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: #334155;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-group input {
+    padding: 14px 16px;
+    border: 2px solid #E0F2FE;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.3s;
+    background: white;
+    color: #1e293b;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #0EA5E9;
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+    background: #F0F9FF;
+}
+
+.form-group input::placeholder {
+    color: #94a3b8;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0EA5E9 0%, #06B6D4 100%);
+    color: white;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+    box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(14, 165, 233, 0.4);
+    background: linear-gradient(135deg, #0284C7 0%, #0891B2 100%);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 25px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.auth-footer a {
+    color: #0EA5E9;
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.3s;
+}
+
+.auth-footer a:hover {
+    color: #0284C7;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .auth-box {
+        padding: 30px 20px;
+        margin: 20px;
+    }
+    
+    .auth-box h1 {
+        font-size: 26px;
+    }
+}
