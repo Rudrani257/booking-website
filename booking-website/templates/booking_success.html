@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Confirmed!{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 50%, #7DD3FC 100%);
+    }
+    
+    .success-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        font-size: 50px;
+        animation: bounce 0.6s ease-out;
+    }
+    
+    .success-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(14, 165, 233, 0.2);
+        text-align: center;
+        animation: slideUp 0.5s ease-out;
+        border: 2px solid rgba(14, 165, 233, 0.1);
+    }
+    
+    .booking-id {
+        background: #E0F2FE;
+        color: #0EA5E9;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 18px;
+        display: inline-block;
+        margin: 20px 0;
+    }
+    
+    .details-section {
+        background: #F0F9FF;
+        padding: 25px;
+        border-radius: 12px;
+        margin: 25px 0;
+        text-align: left;
+        border: 2px solid #E0F2FE;
+    }
+    
+    .detail-value {
+        color: #0f172a;
+        font-weight: 600;
+    }
+    
+    .qr-section {
+        margin: 30px 0;
+        padding: 25px;
+        background: #F0F9FF;
+        border-radius: 12px;
+        border: 2px solid #E0F2FE;
+    }
+    
+    .seat-badge {
+        background: linear-gradient(135deg, #0EA5E9, #06B6D4);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #0EA5E9 0%, #06B6D4 100%);
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: white;
+        color: #475569;
+        border: 2px solid #E0F2FE;
+    }
+</style>
+
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-icon">✅</div>
+        
+        <h1>Booking Confirmed!</h1>
+        <p style="color: #6b7280; font-size: 16px; margin-bottom: 20px;">
+            Your seats have been successfully booked
+        </p>
+        
+        <div class="booking-id">
+            Booking ID: {{ booking.booking_id }}
+        </div>
+        
+        <!-- Booking Details -->
+        <div class="details-section">
+            <div class="detail-row">
+                <span class="detail-label">Lecture:</span>
+                <span class="detail-value">{{ booking.lecture_title }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Instructor:</span>
+                <span class="detail-value">{{ booking.youtuber_name }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Date:</span>
+                <span class="detail-value">{{ booking.lecture_date.strftime('%d %B %Y') }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Venue:</span>
+                <span class="detail-value">{{ booking.venue }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Total Amount:</span>
+                <span class="detail-value" style="color: #10b981; font-size: 20px;">
+                    ₹{{ booking.total_amount }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Seats -->
+        <div style="margin: 20px 0;">
+            <h4 style="color: #374151; margin-bottom: 10px;">Your Seats:</h4>
+            <div class="seats-display">
+                {% for seat in booking.seats %}
+                <span class="seat-badge">{{ seat.id }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- QR Code Section -->
+        <div class="qr-section">
+            <h3>🎫 Your Entry QR Code</h3>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">
+                Scan this QR code at the venue or download it for offline access
+            </p>
+            <div class="qr-code">
+                <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" id="qrCodeImage">
+            </div>
+            <button onclick="downloadQRCode()" style="margin-top: 15px; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                💾 Download QR Code
+            </button>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="{{ url_for('download_receipt', booking_id=booking_id) }}" class="btn btn-primary" target="_blank">
+                📄 View & Print Receipt
+            </a>
+            <a href="{{ url_for('my_bookings') }}" class="btn btn-secondary">
+                📋 View All Bookings
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                🏠 Back to Home
+            </a>
+        </div>
+        
+        <p style="color: #9ca3af; font-size: 13px; margin-top: 30px;">
+            A confirmation email has been sent to {{ booking.user_email }}
+        </p>
+    </div>
+</div>
+
+<script>
+function downloadQRCode() {
+    const qrImage = document.getElementById('qrCodeImage');
+    const link = document.createElement('a');
+    link.href = qrImage.src;
+    link.download = 'booking_{{ booking.booking_id }}_QR.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+{% endblock %}

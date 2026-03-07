@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt - {{ booking.booking_id }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .receipt-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0EA5E9, #06B6D4);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .booking-id {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0EA5E9;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #E0F2FE;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .label {
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .value {
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+        }
+        
+        .seats-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .seat-badge {
+            background: #0EA5E9;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        .total-section {
+            background: #E0F2FE;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        
+        .total-amount {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0EA5E9;
+            text-align: center;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #f9f9f9;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #0EA5E9;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(14,165,233,0.3);
+        }
+        
+        .print-button:hover {
+            background: #0284C7;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .print-button {
+                display: none;
+            }
+            
+            .receipt-container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    
+    <div class="receipt-container">
+        <div class="header">
+            <h1>BOOKING RECEIPT</h1>
+            <div class="booking-id">Booking ID: {{ booking.booking_id }}</div>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <div class="section-title">Booking Information</div>
+                <div class="info-row">
+                    <span class="label">Booking Date:</span>
+                    <span class="value">{{ booking.booking_date.strftime('%d %B %Y, %I:%M %p') }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Status:</span>
+                    <span class="value" style="color: #10b981; font-weight: bold;">✓ CONFIRMED</span>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Lecture Details</div>
+                <div class="info-row">
+                    <span class="label">Title:</span>
+                    <span class="value">{{ booking.lecture_title }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Instructor:</span>
+                    <span class="value">{{ booking.youtuber_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Date:</span>
+                    <span class="value">{{ booking.lecture_date.strftime('%d %B %Y') }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Venue:</span>
+                    <span class="value">{{ booking.venue }}</span>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Passenger Details</div>
+                <div class="info-row">
+                    <span class="label">Name:</span>
+                    <span class="value">{{ booking.user_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Email:</span>
+                    <span class="value">{{ booking.user_email }}</span>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Seats Booked</div>
+                <div class="seats-list">
+                    {% for seat in booking.seats %}
+                    <span class="seat-badge">{{ seat.id }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="total-section">
+                <div style="text-align: center; color: #666; margin-bottom: 10px;">Total Amount Paid</div>
+                <div class="total-amount">₹{{ booking.total_amount }}</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p style="margin-bottom: 10px;"><strong>Thank you for booking with us!</strong></p>
+            <p>Show this receipt at the venue entrance along with a valid ID</p>
+            <p style="margin-top: 15px; font-size: 12px;">For support: support@techbookings.com | +91-1234567890</p>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-print dialog (optional)
+        // window.onload = () => window.print();
+    </script>
+</body>
+</html>

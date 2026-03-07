@@ -1,0 +1,733 @@
+{% extends "base.html" %}
+
+{% block title %}Book Seats - {{ lecture.lecture_title }}{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        overflow-x: hidden;
+    }
+    
+    .booking-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .header-section {
+        background: white;
+        padding: 25px 30px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .lecture-info h2 {
+        color: #1f2937;
+        font-size: 24px;
+        margin: 0 0 5px 0;
+    }
+    
+    .lecture-meta {
+        color: #6b7280;
+        font-size: 14px;
+    }
+    
+    .back-btn {
+        background: #6b7280;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: transform 0.2s;
+    }
+    
+    .back-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .main-content {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 25px;
+    }
+    
+    .seat-selection-area {
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .dsa-indicator {
+        background: #dbeafe;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #3b82f6;
+    }
+    
+    .dsa-indicator h3 {
+        color: #1e40af;
+        font-size: 16px;
+        margin: 0 0 8px 0;
+    }
+    
+    .dsa-tags {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .dsa-tag {
+        background: #3b82f6;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .screen {
+        background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        color: white;
+        text-align: center;
+        padding: 15px;
+        border-radius: 12px 12px 0 0;
+        margin-bottom: 30px;
+        font-weight: 600;
+        font-size: 18px;
+    }
+    
+    .seat-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .section-label {
+        font-weight: 700;
+        color: #374151;
+        margin: 15px 0 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .section-label .price-tag {
+        background: #10b981;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+    }
+    
+    .seat-row {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .seat-row.curved {
+        transform: perspective(400px) rotateX(5deg);
+    }
+    
+    .seat {
+        width: 50px;
+        height: 50px;
+        border: 3px solid #374151;
+        border-radius: 12px 12px 8px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 700;
+        transition: all 0.3s;
+        background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        position: relative;
+        box-shadow: 0 4px 0 #991b1b, 0 6px 10px rgba(0,0,0,0.3);
+    }
+    
+    .seat::before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 35px;
+        height: 12px;
+        background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+        border-radius: 8px 8px 0 0;
+        border: 3px solid #374151;
+        border-bottom: none;
+    }
+    
+    .seat:hover:not(.booked) {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        border-color: #667eea;
+    }
+    
+    .seat.available {
+        background: #f0fdf4;
+        border-color: #86efac;
+    }
+    
+    .seat.selected {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+        animation: pulse 0.5s;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    
+    .seat.booked {
+        background: #fee2e2;
+        border-color: #fca5a5;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+    
+    .legend {
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        margin-top: 25px;
+        padding: 15px;
+        background: #f9fafb;
+        border-radius: 8px;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #374151;
+    }
+    
+    .legend-box {
+        width: 24px;
+        height: 24px;
+        border: 2px solid;
+        border-radius: 6px;
+    }
+    
+    .legend-available { 
+        background: #f0fdf4; 
+        border-color: #86efac; 
+    }
+    
+    .legend-selected { 
+        background: #667eea; 
+        border-color: #667eea; 
+    }
+    
+    .legend-booked { 
+        background: #fee2e2; 
+        border-color: #fca5a5; 
+    }
+    
+    .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .summary-card {
+        background: white;
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .summary-card h3 {
+        color: #1f2937;
+        font-size: 18px;
+        margin: 0 0 15px 0;
+    }
+    
+    .selected-seats-list {
+        max-height: 200px;
+        overflow-y: auto;
+        margin-bottom: 15px;
+    }
+    
+    .selected-seat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background: #f9fafb;
+        border-radius: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .remove-seat-btn {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .undo-redo-btns {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .undo-btn, .redo-btn {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #d1d5db;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .undo-btn:hover, .redo-btn:hover {
+        border-color: #667eea;
+        color: #667eea;
+    }
+    
+    .undo-btn:disabled, .redo-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+    
+    .price-breakdown {
+        border-top: 2px solid #f3f4f6;
+        padding-top: 15px;
+        margin-top: 15px;
+    }
+    
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        color: #6b7280;
+    }
+    
+    .price-row.total {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 2px solid #d1d5db;
+    }
+    
+    .proceed-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s;
+        margin-top: 15px;
+    }
+    
+    .proceed-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+    }
+    
+    .proceed-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .stack-visualization {
+        background: white;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .stack-visualization h4 {
+        color: #1f2937;
+        font-size: 16px;
+        margin: 0 0 12px 0;
+    }
+    
+    .stack-display {
+        background: #f9fafb;
+        padding: 15px;
+        border-radius: 8px;
+        min-height: 100px;
+        max-height: 150px;
+        overflow-y: auto;
+    }
+    
+    .stack-item {
+        background: #667eea;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-bottom: 5px;
+        font-size: 13px;
+        font-weight: 600;
+        animation: slideDown 0.3s;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @media (max-width: 1024px) {
+        .main-content {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="booking-container">
+    <!-- Header -->
+    <div class="header-section">
+        <div class="lecture-info">
+            <h2>{{ lecture.lecture_title }}</h2>
+            <div class="lecture-meta">
+                <strong>{{ lecture.youtuber_name }}</strong> | 
+                {{ lecture.date.strftime('%d %b %Y') }} | 
+                {{ lecture.venue }}
+            </div>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="back-btn">← Back to Lectures</a>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Seat Selection Area -->
+        <div class="seat-selection-area">
+            <!-- DSA Indicator -->
+            <div class="dsa-indicator">
+                <h3>🎯 DSA Concepts in This Page:</h3>
+                <div class="dsa-tags">
+                    <span class="dsa-tag">Array - Seat Layout</span>
+                    <span class="dsa-tag">Stack - Undo/Redo</span>
+                    <span class="dsa-tag">Insert/Delete Operations</span>
+                </div>
+            </div>
+            
+            <!-- Screen -->
+            <div class="screen">🎬 SCREEN THIS WAY</div>
+            
+            <!-- Seat Layout -->
+            <div class="seat-layout" id="seatLayout">
+                {% set sections = {'A': 'front', 'E': 'mid', 'I': 'back'} %}
+                {% for row_seats in seats %}
+                    {% if row_seats[0].row in sections %}
+                        <div class="section-label">
+                            {% if sections[row_seats[0].row] == 'front' %}
+                                FRONT SECTION <span class="price-tag">₹{{ lecture.price_front }}</span>
+                            {% elif sections[row_seats[0].row] == 'mid' %}
+                                MIDDLE SECTION <span class="price-tag">₹{{ lecture.price_mid }}</span>
+                            {% else %}
+                                BACK SECTION <span class="price-tag">₹{{ lecture.price_back }}</span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="seat-row">
+                        {% for seat in row_seats %}
+                        <div class="seat available" 
+                             data-seat-id="{{ seat.id }}"
+                             data-price="{{ seat.price }}"
+                             data-section="{{ seat.section }}"
+                             onclick="selectSeat('{{ seat.id }}', '{{ seat.price }}')">
+                            {{ seat.id }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-box legend-available"></div>
+                    <span>Available</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box legend-selected"></div>
+                    <span>Selected</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box legend-booked"></div>
+                    <span>Booked</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Summary Card -->
+            <div class="summary-card">
+                <h3>Your Selection</h3>
+                
+                <!-- Undo/Redo Buttons (Stack Operations) -->
+                <div class="undo-redo-btns">
+                    <button class="undo-btn" id="undoBtn" onclick="undoSelection()" disabled>
+                        ↶ Undo
+                    </button>
+                    <button class="redo-btn" id="redoBtn" onclick="redoSelection()" disabled>
+                        ↷ Redo
+                    </button>
+                </div>
+                
+                <!-- Selected Seats -->
+                <div class="selected-seats-list" id="selectedSeatsList">
+                    <p style="text-align: center; color: #9ca3af;">No seats selected</p>
+                </div>
+                
+                <!-- Price Breakdown -->
+                <div class="price-breakdown">
+                    <div class="price-row">
+                        <span>Selected Seats:</span>
+                        <span id="seatCount">0</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Total Amount:</span>
+                        <span id="totalPrice">₹0</span>
+                    </div>
+                </div>
+                
+                <button class="proceed-btn" id="proceedBtn" disabled onclick="proceedToPayment()">
+                    Proceed to Payment
+                </button>
+            </div>
+            
+            <!-- Stack Visualization -->
+            <div class="stack-visualization">
+                <h4>📚 Stack (Undo History)</h4>
+                <div class="stack-display" id="stackDisplay">
+                    <p style="text-align: center; color: #9ca3af; font-size: 13px;">
+                        Stack is empty
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ==================== STACK DATA STRUCTURE ====================
+let selectedSeats = [];  // Array to store selected seats
+let undoStack = [];      // Stack for undo operations
+let redoStack = [];      // Stack for redo operations
+
+// ==================== SEAT SELECTION (Array Insert/Delete) ====================
+function selectSeat(seatId, price) {
+    const seatElement = document.querySelector(`[data-seat-id="${seatId}"]`);
+    
+    if (seatElement.classList.contains('booked')) {
+        return; // Can't select booked seats
+    }
+    
+    if (seatElement.classList.contains('selected')) {
+        // Deselect seat (Array Delete Operation)
+        deselectSeat(seatId);
+    } else {
+        // Select seat (Array Insert Operation)
+        selectNewSeat(seatId, price);
+    }
+    
+    updateUI();
+}
+
+function selectNewSeat(seatId, price) {
+    const seatElement = document.querySelector(`[data-seat-id="${seatId}"]`);
+    
+    // Add to selected seats array (INSERT operation)
+    selectedSeats.push({ id: seatId, price: price });
+    
+    // Push to undo stack
+    undoStack.push({ action: 'select', seatId: seatId, price: price });
+    redoStack = []; // Clear redo stack on new action
+    
+    // Update visual
+    seatElement.classList.add('selected');
+    seatElement.classList.remove('available');
+}
+
+function deselectSeat(seatId) {
+    const seatElement = document.querySelector(`[data-seat-id="${seatId}"]`);
+    
+    // Find and remove from array (DELETE operation)
+    const seatIndex = selectedSeats.findIndex(seat => seat.id === seatId);
+    const removedSeat = selectedSeats.splice(seatIndex, 1)[0];
+    
+    // Push to undo stack
+    undoStack.push({ action: 'deselect', seatId: seatId, price: removedSeat.price });
+    redoStack = [];
+    
+    // Update visual
+    seatElement.classList.remove('selected');
+    seatElement.classList.add('available');
+}
+
+// ==================== STACK OPERATIONS ====================
+function undoSelection() {
+    if (undoStack.length === 0) return;
+    
+    const lastAction = undoStack.pop();
+    redoStack.push(lastAction);
+    
+    if (lastAction.action === 'select') {
+        // Undo select = deselect without recording
+        const seatIndex = selectedSeats.findIndex(seat => seat.id === lastAction.seatId);
+        selectedSeats.splice(seatIndex, 1);
+        
+        const seatElement = document.querySelector(`[data-seat-id="${lastAction.seatId}"]`);
+        seatElement.classList.remove('selected');
+        seatElement.classList.add('available');
+    } else {
+        // Undo deselect = select without recording
+        selectedSeats.push({ id: lastAction.seatId, price: lastAction.price });
+        
+        const seatElement = document.querySelector(`[data-seat-id="${lastAction.seatId}"]`);
+        seatElement.classList.add('selected');
+        seatElement.classList.remove('available');
+    }
+    
+    updateUI();
+}
+
+function redoSelection() {
+    if (redoStack.length === 0) return;
+    
+    const lastAction = redoStack.pop();
+    undoStack.push(lastAction);
+    
+    if (lastAction.action === 'select') {
+        selectedSeats.push({ id: lastAction.seatId, price: lastAction.price });
+        
+        const seatElement = document.querySelector(`[data-seat-id="${lastAction.seatId}"]`);
+        seatElement.classList.add('selected');
+        seatElement.classList.remove('available');
+    } else {
+        const seatIndex = selectedSeats.findIndex(seat => seat.id === lastAction.seatId);
+        selectedSeats.splice(seatIndex, 1);
+        
+        const seatElement = document.querySelector(`[data-seat-id="${lastAction.seatId}"]`);
+        seatElement.classList.remove('selected');
+        seatElement.classList.add('available');
+    }
+    
+    updateUI();
+}
+
+// ==================== UPDATE UI ====================
+function updateUI() {
+    // Update selected seats list
+    const listContainer = document.getElementById('selectedSeatsList');
+    if (selectedSeats.length === 0) {
+        listContainer.innerHTML = '<p style="text-align: center; color: #9ca3af;">No seats selected</p>';
+    } else {
+        listContainer.innerHTML = selectedSeats.map(seat => `
+            <div class="selected-seat-item">
+                <span><strong>${seat.id}</strong> - ₹${seat.price}</span>
+                <button class="remove-seat-btn" onclick="selectSeat('${seat.id}', ${seat.price})">
+                    Remove
+                </button>
+            </div>
+        `).join('');
+    }
+    
+    // Update total
+    const total = selectedSeats.reduce((sum, seat) => sum + parseInt(seat.price), 0);
+    document.getElementById('seatCount').textContent = selectedSeats.length;
+    document.getElementById('totalPrice').textContent = `₹${total.toLocaleString('en-IN')}`;
+    
+    // Enable/disable buttons
+    document.getElementById('undoBtn').disabled = undoStack.length === 0;
+    document.getElementById('redoBtn').disabled = redoStack.length === 0;
+    document.getElementById('proceedBtn').disabled = selectedSeats.length === 0;
+    
+    // Update stack visualization
+    updateStackVisualization();
+}
+
+function updateStackVisualization() {
+    const stackDisplay = document.getElementById('stackDisplay');
+    if (undoStack.length === 0) {
+        stackDisplay.innerHTML = '<p style="text-align: center; color: #9ca3af; font-size: 13px;">Stack is empty</p>';
+    } else {
+        stackDisplay.innerHTML = undoStack.slice().reverse().map((item, index) => `
+            <div class="stack-item">
+                ${item.action === 'select' ? '➕' : '➖'} ${item.seatId} (₹${item.price})
+            </div>
+        `).join('');
+    }
+}
+
+function proceedToPayment() {
+    if (selectedSeats.length === 0) {
+        alert('Please select at least one seat!');
+        return;
+    }
+    
+    // Create form and submit
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/confirm-booking';
+    
+    // Add lecture_id
+    const lectureInput = document.createElement('input');
+    lectureInput.type = 'hidden';
+    lectureInput.name = 'lecture_id';
+    lectureInput.value = '{{ lecture_id }}';
+    form.appendChild(lectureInput);
+    
+    // Add selected seats
+    const seatsInput = document.createElement('input');
+    seatsInput.type = 'hidden';
+    seatsInput.name = 'selected_seats';
+    seatsInput.value = JSON.stringify(selectedSeats);
+    form.appendChild(seatsInput);
+    
+    // Add total amount
+    const total = selectedSeats.reduce((sum, seat) => sum + parseInt(seat.price), 0);
+    const amountInput = document.createElement('input');
+    amountInput.type = 'hidden';
+    amountInput.name = 'total_amount';
+    amountInput.value = total;
+    form.appendChild(amountInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+
+// Initialize
+updateUI();
+</script>
+
+{% endblock %}

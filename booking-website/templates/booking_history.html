@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .history-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .header {
+        background: white;
+        padding: 25px 30px;
+        border-radius: 16px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .header h1 {
+        color: #1f2937;
+        font-size: 28px;
+        margin: 0;
+    }
+    
+    .back-btn {
+        background: #6b7280;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .dsa-info {
+        background: #fef3c7;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        border-left: 4px solid #f59e0b;
+    }
+    
+    .dsa-info h3 {
+        color: #92400e;
+        margin: 0 0 10px 0;
+        font-size: 16px;
+    }
+    
+    .linked-list-visual {
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        overflow-x: auto;
+    }
+    
+    .linked-list {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        min-width: max-content;
+        padding: 20px 0;
+    }
+    
+    .list-node {
+        background: #667eea;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 12px;
+        min-width: 150px;
+        text-align: center;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    .node-arrow {
+        font-size: 24px;
+        color: #667eea;
+        font-weight: bold;
+    }
+    
+    .bookings-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .booking-card {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+        animation: slideIn 0.5s;
+    }
+    
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .booking-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 15px;
+    }
+    
+    .booking-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 5px;
+    }
+    
+    .booking-id-badge {
+        background: #dbeafe;
+        color: #1e40af;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .status-confirmed {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    
+    .card-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin: 15px 0;
+    }
+    
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .detail-label {
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    
+    .detail-value {
+        color: #1f2937;
+        font-weight: 600;
+    }
+    
+    .seats-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 15px 0;
+    }
+    
+    .seat-tag {
+        background: #667eea;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    
+    .card-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 2px solid #f3f4f6;
+    }
+    
+    .action-btn {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 600;
+        font-size: 14px;
+        transition: transform 0.2s;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-download {
+        background: #10b981;
+        color: white;
+    }
+    
+    .btn-view {
+        background: #f3f4f6;
+        color: #374151;
+    }
+    
+    .no-bookings {
+        background: white;
+        padding: 60px;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .no-bookings h2 {
+        color: #1f2937;
+        margin-bottom: 15px;
+    }
+    
+    .no-bookings p {
+        color: #6b7280;
+        margin-bottom: 25px;
+    }
+    
+    .explore-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-block;
+    }
+</style>
+
+<div class="history-container">
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <h1>📋 My Bookings</h1>
+            <p style="color: #6b7280; margin: 5px 0 0 0;">Welcome, {{ user_name }}!</p>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="back-btn">← Back to Dashboard</a>
+    </div>
+    
+    <!-- DSA Info -->
+    <div class="dsa-info">
+        <h3>🎯 DSA Concepts: Doubly Linked List & Array Traversal</h3>
+        <p style="color: #78350f; margin: 0; font-size: 14px;">
+            Your bookings are stored using <strong>Doubly Linked List</strong> structure. 
+            Each booking has <strong>PREV</strong> and <strong>NEXT</strong> pointers, allowing bidirectional navigation!
+        </p>
+    </div>
+    
+    {% if bookings %}
+    <!-- Doubly Linked List Visualization -->
+    <div class="linked-list-visual">
+        <h3 style="color: #1f2937; margin: 0 0 20px 0;">🔗 Doubly Linked List Structure</h3>
+        <div style="display: flex; align-items: center; gap: 15px; overflow-x: auto; padding: 20px 0;">
+            <div style="background: #f3f4f6; padding: 15px; border-radius: 10px; font-weight: 600; color: #374151; min-width: 80px; text-align: center;">
+                NULL<br>← HEAD
+            </div>
+            
+            {% for booking in bookings[:5] %}
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 24px; color: #667eea; font-weight: bold;">⇄</span>
+                <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 12px; min-width: 150px; text-align: center; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); position: relative;">
+                    <div style="font-weight: 700; font-size: 14px;">{{ booking.booking_id }}</div>
+                    <div style="font-size: 11px; margin-top: 5px; opacity: 0.9;">{{ booking.lecture_title[:20] }}...</div>
+                    <div style="position: absolute; top: -8px; left: 10px; background: #10b981; color: white; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 600;">PREV</div>
+                    <div style="position: absolute; top: -8px; right: 10px; background: #ef4444; color: white; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 600;">NEXT</div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% if bookings|length > 5 %}
+            <span style="font-size: 24px; color: #667eea; font-weight: bold;">⇄</span>
+            <div style="color: #6b7280; font-weight: 600; min-width: 100px; text-align: center;">
+                ... {{ bookings|length - 5 }} more
+            </div>
+            {% endif %}
+            
+            <span style="font-size: 24px; color: #667eea; font-weight: bold;">⇄</span>
+            <div style="background: #f3f4f6; padding: 15px; border-radius: 10px; font-weight: 600; color: #374151; min-width: 80px; text-align: center;">
+                TAIL →<br>NULL
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border-radius: 10px; border-left: 4px solid #f59e0b;">
+            <h4 style="color: #92400e; margin: 0 0 8px 0; font-size: 14px;">How Doubly Linked List Works:</h4>
+            <ul style="color: #78350f; font-size: 13px; margin: 0; padding-left: 20px;">
+                <li><strong>PREV pointer:</strong> Points to previous booking (navigate backward ←)</li>
+                <li><strong>NEXT pointer:</strong> Points to next booking (navigate forward →)</li>
+                <li><strong>Bidirectional:</strong> Can traverse both ways unlike singly linked list</li>
+                <li><strong>Operations:</strong> Insert O(1), Delete O(1), Search O(n)</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Bookings List -->
+    <div class="bookings-list">
+        {% for booking in bookings %}
+        <div class="booking-card">
+            <div class="card-header">
+                <div>
+                    <div class="booking-title">{{ booking.lecture_title }}</div>
+                    <span class="booking-id-badge">{{ booking.booking_id }}</span>
+                </div>
+                <span class="status-badge status-confirmed">✓ Confirmed</span>
+            </div>
+            
+            <div class="card-details">
+                <div class="detail-item">
+                    <span class="detail-label">Instructor</span>
+                    <span class="detail-value">{{ booking.youtuber_name }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Lecture Date</span>
+                    <span class="detail-value">{{ booking.lecture_date.strftime('%d %B %Y') }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Venue</span>
+                    <span class="detail-value">{{ booking.venue }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Total Amount</span>
+                    <span class="detail-value" style="color: #10b981; font-size: 18px;">
+                        ₹{{ booking.total_amount }}
+                    </span>
+                </div>
+            </div>
+            
+            <div>
+                <span class="detail-label">Booked Seats:</span>
+                <div class="seats-row">
+                    {% for seat in booking.seats %}
+                    <span class="seat-tag">{{ seat.id }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div style="color: #9ca3af; font-size: 13px; margin-top: 10px;">
+                Booked on: {{ booking.booking_date.strftime('%d %B %Y, %I:%M %p') }}
+            </div>
+            
+            
+            
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- No Bookings -->
+    <div class="no-bookings">
+        <h2>📭 No Bookings Yet</h2>
+        <p>You haven't booked any lectures yet. Explore upcoming lectures and book your seat!</p>
+        <a href="{{ url_for('dashboard') }}" class="explore-btn">Explore Lectures</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

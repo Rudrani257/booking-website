@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}QR Scanner - Venue{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
+    }
+    
+    .scanner-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+    }
+    
+    .scanner-card {
+        background: white;
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(14, 165, 233, 0.2);
+        text-align: center;
+    }
+    
+    .scanner-card h1 {
+        color: #0f172a;
+        margin-bottom: 10px;
+    }
+    
+    .scanner-card p {
+        color: #64748b;
+        margin-bottom: 30px;
+    }
+    
+    .input-group {
+        margin: 30px 0;
+    }
+    
+    .input-group input {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #E0F2FE;
+        border-radius: 12px;
+        font-size: 16px;
+        text-align: center;
+        font-weight: 600;
+    }
+    
+    .input-group input:focus {
+        outline: none;
+        border-color: #0EA5E9;
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+    }
+    
+    .verify-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #0EA5E9, #06B6D4);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+    }
+    
+    .verify-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+    }
+    
+    .result-box {
+        margin-top: 30px;
+        padding: 20px;
+        border-radius: 12px;
+        display: none;
+    }
+    
+    .result-box.success {
+        background: #d1fae5;
+        border: 2px solid #10b981;
+        display: block;
+    }
+    
+    .result-box.error {
+        background: #fee2e2;
+        border: 2px solid #ef4444;
+        display: block;
+    }
+    
+    .booking-details {
+        text-align: left;
+        margin-top: 20px;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .download-receipt-btn {
+        margin-top: 20px;
+        width: 100%;
+        padding: 12px;
+        background: #10b981;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+</style>
+
+<div class="scanner-container">
+    <div class="scanner-card">
+        <h1>🎫 QR Code Scanner</h1>
+        <p>Enter the Booking ID from the QR code to verify and download receipt</p>
+        
+        <div class="input-group">
+            <input type="text" 
+                   id="bookingIdInput" 
+                   placeholder="Enter Booking ID (e.g., BK20250101123456)"
+                   maxlength="20">
+        </div>
+        
+        <button class="verify-btn" onclick="verifyBooking()">
+            🔍 Verify & Download Receipt
+        </button>
+        
+        <div id="resultBox" class="result-box"></div>
+    </div>
+</div>
+
+<script>
+function verifyBooking() {
+    const bookingId = document.getElementById('bookingIdInput').value.trim();
+    const resultBox = document.getElementById('resultBox');
+
+    if (!bookingId) {
+        resultBox.className = 'result-box error';
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = '<strong>❌ Error:</strong> Please enter a Booking ID';
+        return;
+    }
+
+    // Show loading
+    resultBox.className = 'result-box';
+    resultBox.style.display = 'block';
+    resultBox.innerHTML = '<div style="text-align: center;">⏳ Verifying booking...</div>';
+
+    // Try opening receipt (acts as verification)
+    const receiptUrl = `/download-receipt/${bookingId}`;
+
+    // Open in new tab
+    const win = window.open(receiptUrl, '_blank');
+
+    // If popup blocked or invalid
+    setTimeout(() => {
+        if (!win || win.closed || typeof win.closed === 'undefined') {
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = '<strong>❌ Error:</strong> Booking not found or popup blocked';
+        } else {
+            resultBox.className = 'result-box success';
+            resultBox.innerHTML = `
+                <strong>✅ Booking Verified!</strong><br>
+                Receipt opened in new tab.
+            `;
+        }
+    }, 600);
+}
+
+// Allow Enter key
+document.getElementById('bookingIdInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        verifyBooking();
+    }
+});
+</script>
+
+{% endblock %}

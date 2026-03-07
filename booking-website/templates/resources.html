@@ -1,0 +1,374 @@
+{% extends "base.html" %}
+
+{% block title %}Learning Resources{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .header {
+        background: white;
+        padding: 25px 30px;
+        border-radius: 16px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .section {
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .section h2 {
+        color: #1f2937;
+        margin: 0 0 20px 0;
+        font-size: 24px;
+    }
+    
+    .playlists-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .playlist-card {
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    
+    .playlist-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        border-color: #667eea;
+    }
+    
+    .playlist-thumbnail {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background: #f3f4f6;
+    }
+    
+    .playlist-info {
+        padding: 15px;
+    }
+    
+    .playlist-title {
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+    
+    .playlist-channel {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .playlist-stats {
+        display: flex;
+        gap: 15px;
+        font-size: 13px;
+        color: #9ca3af;
+    }
+    
+    .books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .book-card {
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.3s;
+    }
+    
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        border-color: #10b981;
+    }
+    
+    .book-title {
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+        font-size: 16px;
+    }
+    
+    .book-author {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .book-desc {
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.5;
+        margin-bottom: 15px;
+    }
+    
+    .book-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #dbeafe;
+        color: #1e40af;
+    }
+</style>
+
+<div class="container">
+    <div class="header">
+        <h1>📚 Learning Resources</h1>
+        <p style="color: #6b7280;">YouTube Playlists & Recommended Books by Top Instructors</p>
+        <a href="{{ url_for('dashboard') }}" style="color: #667eea; text-decoration: none; font-weight: 600; margin-top: 10px; display: inline-block;">← Back to Dashboard</a>
+    </div>
+    
+    <!-- YouTube Playlists -->
+    <div class="section">
+        <h2>🎥 Popular YouTube Playlists</h2>
+        <div class="playlists-grid">
+            <div class="playlist-card" onclick="window.open('https://www.youtube.com/@takeUforward', '_blank')">
+                <img src="https://i.ytimg.com/vi/0bHoB32fuj0/maxresdefault.jpg" class="playlist-thumbnail" alt="Striver DSA">
+                <div class="playlist-info">
+                    <div class="playlist-title">Striver's A2Z DSA Course</div>
+                    <div class="playlist-channel">by Striver (Raj Vikramaditya)</div>
+                    <div class="playlist-stats">
+                        <span>📹 456 videos</span>
+                        <span>⏱️ 300+ hours</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="playlist-card" onclick="window.open('https://www.youtube.com/@ApnaCollegeOfficial', '_blank')">
+                <img src="https://i.ytimg.com/vi/lW_mrP00H_4/maxresdefault.jpg" class="playlist-thumbnail" alt="Apna College">
+                <div class="playlist-info">
+                    <div class="playlist-title">Complete Python Course</div>
+                    <div class="playlist-channel">by Apna College</div>
+                    <div class="playlist-stats">
+                        <span>📹 100 videos</span>
+                        <span>⏱️ 50+ hours</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="playlist-card" onclick="window.open('https://www.youtube.com/@CodeWithHarry', '_blank')">
+                <img src="https://i.ytimg.com/vi/7wnove7K-ZQ/maxresdefault.jpg" class="playlist-thumbnail" alt="Code with Harry">
+                <div class="playlist-info">
+                    <div class="playlist-title">Java Development Course</div>
+                    <div class="playlist-channel">by Code with Harry</div>
+                    <div class="playlist-stats">
+                        <span>📹 150 videos</span>
+                        <span>⏱️ 80+ hours</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="playlist-card" onclick="window.open('https://www.youtube.com/@KunalKushwaha', '_blank')">
+                <img src="https://i.ytimg.com/vi/rZ41y93P2Qo/maxresdefault.jpg" class="playlist-thumbnail" alt="Kunal Kushwaha">
+                <div class="playlist-info">
+                    <div class="playlist-title">DSA Bootcamp in Java</div>
+                    <div class="playlist-channel">by Kunal Kushwaha</div>
+                    <div class="playlist-stats">
+                        <span>📹 200 videos</span>
+                        <span>⏱️ 150+ hours</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="playlist-card" onclick="window.open('https://www.youtube.com/@tanaypratap', '_blank')">
+                <img src="https://i.ytimg.com/vi/oDqjPvD54Ss/maxresdefault.jpg" class="playlist-thumbnail" alt="Tanay Pratap">
+                <div class="playlist-info">
+                    <div class="playlist-title">Web Development Series</div>
+                    <div class="playlist-channel">by Tanay Pratap</div>
+                    <div class="playlist-stats">
+                        <span>📹 80 videos</span>
+                        <span>⏱️ 40+ hours</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="playlist-card" onclick="window.open('https://www.youtube.com/@LoveBabbar', '_blank')">
+                <img src="https://i.ytimg.com/vi/z9bZufPHFLU/maxresdefault.jpg" class="playlist-thumbnail" alt="Love Babbar">
+                <div class="playlist-info">
+                    <div class="playlist-title">Supreme DSA Course</div>
+                    <div class="playlist-channel">by Love Babbar</div>
+                    <div class="playlist-stats">
+                        <span>📹 350 videos</span>
+                        <span>⏱️ 250+ hours</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="playlist-card" onclick="window.open('https://www.youtube.com/@Freecodecamp', '_blank')">
+                <img src="https://i.ytimg.com/vi/8hly31xKli0/maxresdefault.jpg" class="playlist-thumbnail" alt="FreeCodeCamp">
+                <div class="playlist-info">
+                    <div class="playlist-title">Algorithms & Data Structures</div>
+                    <div class="playlist-channel">by FreeCodeCamp</div>
+                    <div class="playlist-stats">
+                        <span>📹 50 videos</span>
+                        <span>⏱️ 100+ hours</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="playlist-card" onclick="window.open('https://www.youtube.com/@mycodeschool', '_blank')">
+                <img src="https://i.ytimg.com/vi/92S4zgXN17o/maxresdefault.jpg" class="playlist-thumbnail" alt="MyCodeSchool">
+                <div class="playlist-info">
+                    <div class="playlist-title">Data Structures Basics</div>
+                    <div class="playlist-channel">by MyCodeSchool</div>
+                    <div class="playlist-stats">
+                        <span>📹 90 videos</span>
+                        <span>⏱️ 30+ hours</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="playlist-card" onclick="window.open('https://www.youtube.com/@Fireship', '_blank')">
+                <img src="https://i.ytimg.com/vi/cg5VNwIdzLs/maxresdefault.jpg" class="playlist-thumbnail" alt="Fireship">
+                <div class="playlist-info">
+                    <div class="playlist-title">Code in 100 Seconds</div>
+                    <div class="playlist-channel">by Fireship</div>
+                    <div class="playlist-stats">
+                        <span>📹 200 videos</span>
+                        <span>⏱️ 10+ hours</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recommended Books -->
+    <div class="section">
+        <h2>📖 Recommended Books</h2>
+        <div class="books-grid">
+            <div class="book-card">
+                <div class="book-title">Introduction to Algorithms</div>
+                <div class="book-author">by Thomas H. Cormen</div>
+                <div class="book-desc">
+                    The bible of algorithms. Comprehensive coverage of all major algorithms and data structures.
+                </div>
+                <span class="book-badge">DSA</span>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-title">Cracking the Coding Interview</div>
+                <div class="book-author">by Gayle Laakmann McDowell</div>
+                <div class="book-desc">
+                    189 programming questions with detailed solutions. Perfect for interview prep.
+                </div>
+                <span class="book-badge">Interview Prep</span>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-title">Python Crash Course</div>
+                <div class="book-author">by Eric Matthes</div>
+                <div class="book-desc">
+                    Hands-on, project-based introduction to Python programming.
+                </div>
+                <span class="book-badge">Python</span>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-title">Effective Java</div>
+                <div class="book-author">by Joshua Bloch</div>
+                <div class="book-desc">
+                    Best practices for writing robust, maintainable Java code.
+                </div>
+                <span class="book-badge">Java</span>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-title">Head First Design Patterns</div>
+                <div class="book-author">by Eric Freeman</div>
+                <div class="book-desc">
+                    Learn design patterns through engaging, visual explanations.
+                </div>
+                <span class="book-badge">Design Patterns</span>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-title">The Pragmatic Programmer</div>
+                <div class="book-author">by Andrew Hunt</div>
+                <div class="book-desc">
+                    Timeless lessons on software development and career growth.
+                </div>
+                <span class="book-badge">Career</span>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-title">Data Structures and Algorithms in Python</div>
+                <div class="book-author">by Michael T. Goodrich</div>
+                <div class="book-desc">
+                    Complete coverage of DSA concepts with Python implementations.
+                </div>
+                <span class="book-badge">DSA + Python</span>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-title">You Don't Know JS</div>
+                <div class="book-author">by Kyle Simpson</div>
+                <div class="book-desc">
+                    Deep dive into JavaScript's core mechanisms and quirks.
+                </div>
+                <span class="book-badge">JavaScript</span>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-title">Clean Code</div>
+                <div class="book-author">by Robert C. Martin</div>
+                <div class="book-desc">
+                    Learn how to write code that is easy to read, maintain, and extend.
+                </div>
+                <span class="book-badge">Best Practices</span>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-title">Algorithms Unlocked</div>
+                <div class="book-author">by Thomas H. Cormen</div>
+                <div class="book-desc">
+                    Beginner-friendly introduction to algorithms and their applications.
+                </div>
+                <span class="book-badge">Algorithms</span>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-title">System Design Interview</div>
+                <div class="book-author">by Alex Xu</div>
+                <div class="book-desc">
+                    Insider's guide to system design interviews at tech companies.
+                </div>
+                <span class="book-badge">System Design</span>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-title">Grokking Algorithms</div>
+                <div class="book-author">by Aditya Bhargava</div>
+                <div class="book-desc">
+                    Illustrated guide to algorithms with easy-to-understand examples.
+                </div>
+                <span class="book-badge">Beginner-Friendly</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
